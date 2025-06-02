@@ -1,4 +1,4 @@
-import { renderLogin } from '../../views/auth/login';
+import { renderLogin, initRememberMe, handleRememberMe } from '../../views/auth/login';
 import { renderRegister } from '../../views/auth/register';
 import { renderAdminDashboard } from '../../views/admin/dashboard';
 import { renderEmployeeDashboard } from '../../views/employee/dashboard';
@@ -10,6 +10,7 @@ export function initAuth() {
     function navigateToLogin() {
         app.innerHTML = renderLogin();
         setupLoginListeners();
+        initRememberMe(); // Initialize remember me functionality
     }
 
     function navigateToRegister() {
@@ -85,6 +86,9 @@ export function initAuth() {
             const data = await response.json();
 
             if (response.ok) {
+                // Handle remember me
+                handleRememberMe(email);
+
                 // Store user data in localStorage
                 localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);

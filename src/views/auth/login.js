@@ -22,7 +22,7 @@ export function renderLogin() {
                     </div>
                     <div class="flex items-center justify-between text-sm">
                         <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" /> Remember me
+                            <input type="checkbox" id="rememberMe" class="mr-2" /> Remember me
                         </label>
                         <a href="#" class="text-blue-600 hover:underline">Forgot Password?</a>
                     </div>
@@ -37,4 +37,67 @@ export function renderLogin() {
             </div>
         </div>
     `;
+}
+
+// Function to initialize remember me functionality
+export function initRememberMe() {
+    const emailInput = document.getElementById('email');
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+
+    if (!emailInput || !rememberMeCheckbox) {
+        return;
+    }
+
+    // Check if there's a saved email
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+        emailInput.value = savedEmail;
+        rememberMeCheckbox.checked = true;
+    }
+}
+
+// Function to handle remember me on login
+export function handleRememberMe(email) {
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+        localStorage.setItem('rememberedEmail', email);
+    } else {
+        localStorage.removeItem('rememberedEmail');
+    }
+}
+
+// Initialize login functionality
+export function initLogin() {
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+
+    if (!loginForm || !emailInput || !rememberMeCheckbox) {
+        console.error('Login form elements not found');
+        return;
+    }
+
+    // Check if there's a saved email
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+        emailInput.value = savedEmail;
+        rememberMeCheckbox.checked = true;
+    }
+
+    // Handle form submission
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = emailInput.value;
+        const password = document.getElementById('password').value;
+
+        // If remember me is checked, save the email
+        if (rememberMeCheckbox.checked) {
+            localStorage.setItem('rememberedEmail', email);
+        } else {
+            localStorage.removeItem('rememberedEmail');
+        }
+
+        // Here you would typically handle the login logic
+        // For example, making an API call to your backend
+    });
 } 
