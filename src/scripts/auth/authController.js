@@ -89,13 +89,11 @@ export function initAuth() {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);
 
-                // Redirect based on user role
+                // Redirect based on user role (ubah hash saja)
                 if (data.user.role === 'admin') {
-                    app.innerHTML = renderAdminDashboard();
-                    setupAdminDashboardListeners();
+                    window.location.hash = '#/admin-dashboard';
                 } else {
-                    app.innerHTML = renderEmployeeDashboard();
-                    setupEmployeeDashboardListeners();
+                    window.location.hash = '#/employee-dashboard';
                 }
             } else {
                 alert(data.message || 'Login failed');
@@ -160,6 +158,26 @@ export function initAuth() {
         window.location.hash = '/';
     }
 
-    // Initialize with login page
-    navigateToLogin();
+    // Cek token & user
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (token && user) {
+        // Render dashboard hanya jika hash sesuai
+        if (user.role === 'admin' && window.location.hash === '#/admin-dashboard') {
+            app.innerHTML = renderAdminDashboard();
+            setupAdminDashboardListeners();
+        } else if (user.role !== 'admin' && window.location.hash === '#/employee-dashboard') {
+            app.innerHTML = renderEmployeeDashboard();
+            setupEmployeeDashboardListeners();
+        } else {
+            // Jika hash tidak sesuai, arahkan ke dashboard yang benar
+            if (user.role === 'admin') {
+                window.location.hash = '#/admin-dashboard';
+            } else {
+                window.location.hash = '#/employee-dashboard';
+            }
+        }
+    } else {
+        navigateToLogin();
+    }
 } 
