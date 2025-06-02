@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Insert admin user (password: admin)
 INSERT INTO users (first_name, last_name, email, password, role)
-VALUES ('Admin', 'User', 'admin@gmail.com', '$2a$10$X7UrH5QxX5QxX5QxX5QxXO5QxX5QxX5QxX5QxX5QxX5QxX5QxX5Qx', 'admin');
+VALUES ('Admin', 'User', 'admin@gmail.com', '$2y$10$fAmKBrwbSuLZNhdgkAVgoeZsTnoQ5hllhjjrPW4KL2vSYps1nnu0S', 'admin');
 
 -- Create employees table
 CREATE TABLE IF NOT EXISTS employees (
