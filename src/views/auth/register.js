@@ -32,11 +32,7 @@ export function renderRegister() {
                         <p class="text-xs text-gray-400 mt-1">It must be a combination of minimum 8 letters, numbers, and
                             symbols.</p>
                     </div>
-                    <div class="flex items-center justify-between text-sm">
-                        <label class="flex items-center">
-                            <input type="checkbox" class="mr-2" /> Remember me
-                        </label>
-                    </div>
+                    
                     <button type="submit"
                         class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Sign Up</button>
                 </form>
