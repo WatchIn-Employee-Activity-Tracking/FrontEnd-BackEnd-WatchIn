@@ -2,6 +2,8 @@ import { renderLogin, initRememberMe, handleRememberMe } from '../../views/auth/
 import { renderRegister } from '../../views/auth/register';
 import { renderAdminDashboard } from '../../views/admin/dashboard';
 import { renderEmployeeDashboard } from '../../views/employee/dashboard';
+import { renderForgotPassword, initForgotPassword } from '../../views/auth/forgot-password';
+import { renderResetPassword, initResetPassword } from '../../views/auth/reset-password';
 
 export function initAuth() {
     const app = document.getElementById('app');
@@ -18,11 +20,22 @@ export function initAuth() {
         setupRegisterListeners();
     }
 
+    function navigateToForgotPassword() {
+        app.innerHTML = renderForgotPassword();
+        initForgotPassword();
+    }
+
+    function navigateToResetPassword() {
+        app.innerHTML = renderResetPassword();
+        initResetPassword();
+    }
+
     // Setup event listeners for login page
     function setupLoginListeners() {
         const loginForm = document.getElementById('loginForm');
         const registerLink = document.getElementById('registerLink');
         const backToHome = document.getElementById('backToHome');
+        const forgotPasswordLink = document.querySelector('a[href="#/forgot-password"]');
 
         if (loginForm) {
             loginForm.addEventListener('submit', handleLogin);
@@ -32,6 +45,13 @@ export function initAuth() {
             registerLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 navigateToRegister();
+            });
+        }
+
+        if (forgotPasswordLink) {
+            forgotPasswordLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateToForgotPassword();
             });
         }
 
@@ -68,11 +88,26 @@ export function initAuth() {
         }
     }
 
+    // Helper function for password validation
+    function isPasswordValid(password, email) {
+        if (email === 'admin@gmail.com' && password === 'admin') return true;
+        const minLength = 8;
+        const hasNumber = /[0-9]/.test(password);
+        const hasSymbol = /[^A-Za-z0-9]/.test(password);
+        return password.length >= minLength && hasNumber && hasSymbol;
+    }
+
     // Handle login form submission
     async function handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+
+        // Password validation (kecuali admin)
+        if (!isPasswordValid(password, email)) {
+            alert('Password must be at least 8 characters and contain a number and a symbol!');
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -115,6 +150,12 @@ export function initAuth() {
         const lastName = document.getElementById('lastName').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+
+        // Password validation (kecuali admin)
+        if (!isPasswordValid(password, email)) {
+            alert('Password must be at least 8 characters and contain a number and a symbol!');
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:5000/api/auth/register', {
@@ -162,25 +203,41 @@ export function initAuth() {
         window.location.hash = '/';
     }
 
-    // Cek token & user
+    // Check login state and hash, render page accordingly
+    const hash = window.location.hash;
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
+
     if (token && user) {
-        // Render dashboard hanya jika hash sesuai
-        if (user.role === 'admin' && window.location.hash === '#/admin-dashboard') {
+        // Sudah login
+        if (user.role === 'admin' && hash === '#/admin-dashboard') {
             app.innerHTML = renderAdminDashboard();
             setupAdminDashboardListeners();
-        } else if (user.role !== 'admin' && window.location.hash === '#/employee-dashboard') {
+            return;
+        } else if (user.role !== 'admin' && hash === '#/employee-dashboard') {
             app.innerHTML = renderEmployeeDashboard();
             setupEmployeeDashboardListeners();
+            return;
         } else {
-            // Jika hash tidak sesuai, arahkan ke dashboard yang benar
+            // Jika hash tidak sesuai, redirect ke dashboard yang benar
             if (user.role === 'admin') {
                 window.location.hash = '#/admin-dashboard';
             } else {
                 window.location.hash = '#/employee-dashboard';
             }
+            return;
         }
+    }
+
+    // Belum login, handle halaman auth
+    if (hash === '#/login') {
+        navigateToLogin();
+    } else if (hash === '#/register') {
+        navigateToRegister();
+    } else if (hash === '#/forgot-password') {
+        navigateToForgotPassword();
+    } else if (hash.startsWith('#/reset-password')) {
+        navigateToResetPassword();
     } else {
         navigateToLogin();
     }

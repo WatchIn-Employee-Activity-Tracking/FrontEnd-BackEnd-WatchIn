@@ -24,7 +24,7 @@ export function renderLogin() {
                         <label class="flex items-center">
                             <input type="checkbox" id="rememberMe" class="mr-2" /> Remember me
                         </label>
-                        <a href="#" class="text-blue-600 hover:underline">Forgot Password?</a>
+                        <a href="#/forgot-password" class="text-blue-600 hover:underline">Forgot Password?</a>
                     </div>
                     <button type="submit"
                         class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Log
