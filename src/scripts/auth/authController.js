@@ -88,11 +88,26 @@ export function initAuth() {
         }
     }
 
+    // Helper function for password validation
+    function isPasswordValid(password, email) {
+        if (email === 'admin@gmail.com' && password === 'admin') return true;
+        const minLength = 8;
+        const hasNumber = /[0-9]/.test(password);
+        const hasSymbol = /[^A-Za-z0-9]/.test(password);
+        return password.length >= minLength && hasNumber && hasSymbol;
+    }
+
     // Handle login form submission
     async function handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+
+        // Password validation (kecuali admin)
+        if (!isPasswordValid(password, email)) {
+            alert('Password must be at least 8 characters and contain a number and a symbol!');
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -135,6 +150,12 @@ export function initAuth() {
         const lastName = document.getElementById('lastName').value;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+
+        // Password validation (kecuali admin)
+        if (!isPasswordValid(password, email)) {
+            alert('Password must be at least 8 characters and contain a number and a symbol!');
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:5000/api/auth/register', {
