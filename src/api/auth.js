@@ -82,4 +82,90 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// Check email endpoint for password reset
+router.post('/check-email', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Check if email exists in database
+        const [users] = await pool.execute(
+            'SELECT * FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ message: 'Email tidak ditemukan' });
+        }
+
+        // Generate a temporary token for password reset
+        const resetToken = jwt.sign(
+            { userId: users[0].id },
+            'your-secret-key', // Use the same secret key as login
+            { expiresIn: '1h' }
+        );
+
+        // Store the reset token in the database
+        await pool.execute(
+            'UPDATE users SET reset_token = ?, reset_token_expires = DATE_ADD(NOW(), INTERVAL 1 HOUR) WHERE id = ?',
+            [resetToken, users[0].id]
+        );
+
+        res.json({ 
+            message: 'Email ditemukan',
+            resetToken 
+        });
+    } catch (error) {
+        console.error('Check email error:', error);
+        res.status(500).json({ message: 'Terjadi kesalahan server' });
+    }
+});
+
+// Reset password endpoint
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        console.log('[RESET PASSWORD] Received token:', token);
+        console.log('[RESET PASSWORD] Received newPassword:', newPassword);
+
+        // Verify token
+        let decoded;
+        try {
+            decoded = jwt.verify(token, 'your-secret-key');
+            console.log('[RESET PASSWORD] JWT decoded:', decoded);
+        } catch (err) {
+            console.error('[RESET PASSWORD] JWT verify error:', err);
+            return res.status(400).json({ message: 'Token tidak valid atau sudah kadaluarsa (JWT error)' });
+        }
+        console.log('[RESET PASSWORD] Decoded userId:', decoded.userId);
+
+        // Check if token exists and is not expired
+        const [users] = await pool.execute(
+            'SELECT * FROM users WHERE id = ? AND reset_token = ? AND reset_token_expires > NOW()',
+            [decoded.userId, token]
+        );
+        console.log('[RESET PASSWORD] User found:', users.length);
+        if (users.length === 0) {
+            console.error('[RESET PASSWORD] No user found with valid token and expiry.');
+            return res.status(400).json({ message: 'Token tidak valid atau sudah kadaluarsa (DB check)' });
+        }
+
+        // Hash new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        console.log('[RESET PASSWORD] Password hashed.');
+
+        // Update password and clear reset token
+        await pool.execute(
+            'UPDATE users SET password = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?',
+            [hashedPassword, decoded.userId]
+        );
+        console.log('[RESET PASSWORD] Password updated and token cleared for userId:', decoded.userId);
+
+        res.json({ message: 'Password berhasil diubah' });
+        console.log('[RESET PASSWORD] Success response sent.');
+    } catch (error) {
+        console.error('[RESET PASSWORD] General error:', error);
+        res.status(500).json({ message: 'Terjadi kesalahan server' });
+    }
+});
+
 module.exports = router; 

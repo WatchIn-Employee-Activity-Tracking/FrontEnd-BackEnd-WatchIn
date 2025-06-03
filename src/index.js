@@ -29,7 +29,12 @@ function renderByHash() {
         return;
     }
 
-    if (hash === '#/login') {
+    if (
+        hash === '#/login' ||
+        hash === '#/register' ||
+        hash === '#/forgot-password' ||
+        hash.startsWith('#/reset-password')
+    ) {
         initAuth();
     } else {
         initLanding();
