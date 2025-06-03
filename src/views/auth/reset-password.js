@@ -45,6 +45,14 @@ export function initResetPassword() {
         return;
     }
 
+    // Helper function for password validation
+    function isPasswordValid(password) {
+        const minLength = 8;
+        const hasNumber = /[0-9]/.test(password);
+        const hasSymbol = /[^A-Za-z0-9]/.test(password);
+        return password.length >= minLength && hasNumber && hasSymbol;
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         console.log('Form submitted!');
@@ -62,8 +70,8 @@ export function initResetPassword() {
         }
 
         // Validate password strength
-        if (newPassword.length < 8) {
-            passwordError.textContent = 'Password must be at least 8 characters long';
+        if (!isPasswordValid(newPassword)) {
+            passwordError.textContent = 'Password must be at least 8 characters and contain a number and a symbol';
             passwordError.classList.remove('hidden');
             return;
         }
