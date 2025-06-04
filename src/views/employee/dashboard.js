@@ -22,53 +22,31 @@ export function renderEmployeeDashboard() {
             <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <!-- Dashboard Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
-                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">My Tasks</dt>
-                                        <dd class="text-lg font-semibold text-gray-900">0</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Kamera di border kiri -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg min-h-[400px] flex items-center justify-center">
+                        <video id="webcamVideo" width="640" height="480" autoplay muted class="rounded" style="display:none;"></video>
+                        <canvas id="eyeCanvas" width="224" height="224" style="display: none;"></canvas>
                     </div>
-
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
-                                    <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Hours Worked</dt>
-                                        <dd class="text-lg font-semibold text-gray-900">0</dd>
-                                    </dl>
-                                </div>
-                            </div>
+                    <!-- Status model di border kanan -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg min-h-[400px] flex flex-col items-center justify-center">
+                        <div class="mb-4">
+                            <span class="font-semibold">Status: </span>
+                            <span id="detectionStatus">-</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-semibold">Durasi Mata Terbuka: </span>
+                            <span id="openDuration">0</span> detik
+                        </div>
+                        <div>
+                            <span class="font-semibold">Durasi Mata Tertutup: </span>
+                            <span id="closedDuration">0</span> detik
                         </div>
                     </div>
                 </div>
-
-                <!-- Recent Tasks -->
-                <div class="bg-white shadow rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Tasks</h3>
-                    </div>
-                    <div class="border-t border-gray-200">
-                        <div class="px-4 py-5 sm:p-6">
-                            <p class="text-gray-500">No recent tasks</p>
-                        </div>
-                    </div>
+                <!-- Tombol kontrol kamera di bawah border -->
+                <div class="flex gap-4 justify-center mt-4">
+                    <button id="startCameraBtn" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition">Start Camera</button>
+                    <button id="stopCameraBtn" class="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600 transition" style="display:none;">Matikan Kamera</button>
                 </div>
             </div>
         </div>

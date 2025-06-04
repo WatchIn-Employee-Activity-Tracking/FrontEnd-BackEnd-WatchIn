@@ -4,6 +4,7 @@ import { renderAdminDashboard } from '../../views/admin/dashboard';
 import { renderEmployeeDashboard } from '../../views/employee/dashboard';
 import { renderForgotPassword, initForgotPassword } from '../../views/auth/forgot-password';
 import { renderResetPassword, initResetPassword } from '../../views/auth/reset-password';
+import { startCameraDetection } from '../cameraDetection';
 
 export function initAuth() {
     const app = document.getElementById('app');
@@ -194,6 +195,8 @@ export function initAuth() {
         if (logoutButton) {
             logoutButton.addEventListener('click', handleLogout);
         }
+        // Mulai deteksi kamera dan model setelah dashboard employee dirender
+        startCameraDetection();
     }
 
     // Handle logout
