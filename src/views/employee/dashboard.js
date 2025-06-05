@@ -48,6 +48,15 @@ export function renderEmployeeDashboard() {
                     <button id="startCameraBtn" class="bg-blue-600 text-white px-4 py-2 rounded font-semibold hover:bg-blue-700 transition">Start Camera</button>
                     <button id="stopCameraBtn" class="bg-red-500 text-white px-4 py-2 rounded font-semibold hover:bg-red-600 transition" style="display:none;">Matikan Kamera</button>
                 </div>
+                <!-- Kotak log deteksi mata -->
+                <div class="max-w-4xl w-full mx-auto mt-6">
+                    <div class="bg-white shadow rounded-lg p-4 min-h-[120px]">
+                        <h3 class="font-semibold mb-2">Log Deteksi Mata</h3>
+                        <ul id="eyeDetectionLog" class="text-sm text-gray-700 space-y-1">
+                            <!-- Log akan muncul di sini -->
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     `;

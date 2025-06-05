@@ -32,10 +32,18 @@ export function initForgotPassword() {
     const form = document.getElementById('forgotPasswordForm');
     const emailInput = document.getElementById('email');
     const emailError = document.getElementById('emailError');
+    const backToLoginLink = document.querySelector('a[href="#/login"]');
 
     if (!form || !emailInput || !emailError) {
         console.error('Forgot password form elements not found');
         return;
+    }
+
+    if (backToLoginLink) {
+        backToLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.hash = '#/login';
+        });
     }
 
     form.addEventListener('submit', async (e) => {
