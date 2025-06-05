@@ -24,8 +24,37 @@ let lastStatusChangeTime = null;
 let durationInterval = null;
 let mediaStream = null;
 let cameraActive = false;
+window.cameraActive = cameraActive;
 let mediapipeLoaded = false;
 let faceMeshInitialized = false;
+// Logging
+let eyeDetectionLog = [];
+
+function addEyeLog(status, duration) {
+    const logList = document.getElementById('eyeDetectionLog');
+    if (!logList) return;
+    const now = new Date();
+    const dateStr = now.toLocaleString('id-ID');
+    const durasiStr = duration ? duration.toFixed(1) : '0';
+    const li = document.createElement('li');
+    li.textContent = `[${dateStr}] Status: ${status}, Durasi: ${durasiStr} detik`;
+    logList.insertBefore(li, logList.firstChild);
+    eyeDetectionLog.unshift({ date: dateStr, status, duration: durasiStr });
+    // Batasi maksimal 10 log
+    while (logList.children.length > 10) {
+        logList.removeChild(logList.lastChild);
+    }
+    while (eyeDetectionLog.length > 10) {
+        eyeDetectionLog.pop();
+    }
+    logList.scrollTop = 0;
+}
+
+function resetEyeLog() {
+    eyeDetectionLog = [];
+    const logList = document.getElementById('eyeDetectionLog');
+    if (logList) logList.innerHTML = '';
+}
 
 function getEyeBoundingBox(landmarks, videoWidth, videoHeight) {
     if (landmarks.length === 0) return null;
@@ -101,6 +130,8 @@ function updateDurations(predictedClass) {
         } else if (lastEyeStatus === 'Closed') {
             closedDuration += duration;
         }
+        // Tambahkan log setiap kali status berubah
+        addEyeLog(lastEyeStatus, duration);
         lastEyeStatus = predictedClass;
         lastStatusChangeTime = now;
     }
@@ -189,6 +220,8 @@ export function startCameraDetection() {
     closedDurationSpan = document.getElementById('closedDuration');
     const startBtn = document.getElementById('startCameraBtn');
     const stopBtn = document.getElementById('stopCameraBtn');
+    // Logging
+    resetEyeLog();
     if (!webcamVideo || !eyeCanvas || !detectionStatus || !openDurationSpan || !closedDurationSpan || !startBtn || !stopBtn) return;
 
     // Hide video at start
@@ -208,6 +241,7 @@ export function startCameraDetection() {
     startBtn.onclick = () => {
         if (cameraActive) return;
         cameraActive = true;
+        window.cameraActive = cameraActive;
         startBtn.style.display = 'none';
         stopBtn.style.display = '';
         webcamVideo.style.display = '';
@@ -249,6 +283,7 @@ export function startCameraDetection() {
     stopBtn.onclick = () => {
         if (!cameraActive) return;
         cameraActive = false;
+        window.cameraActive = cameraActive;
         stopBtn.style.display = 'none';
         startBtn.style.display = '';
         webcamVideo.style.display = 'none';
@@ -270,6 +305,8 @@ export function startCameraDetection() {
             clearInterval(durationInterval);
             durationInterval = null;
         }
+        // Reset log saat kamera dimatikan
+        resetEyeLog();
         // Reload halaman setelah kamera dimatikan
         window.location.reload();
     };

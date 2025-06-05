@@ -24,6 +24,14 @@ export function initAuth() {
     function navigateToForgotPassword() {
         app.innerHTML = renderForgotPassword();
         initForgotPassword();
+        // Tambahkan event listener untuk Back to Login
+        const backToLoginLink = document.querySelector('a[href="#/login"]');
+        if (backToLoginLink) {
+            backToLoginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigateToLogin();
+            });
+        }
     }
 
     function navigateToResetPassword() {
@@ -129,6 +137,9 @@ export function initAuth() {
                 localStorage.setItem('user', JSON.stringify(data.user));
                 localStorage.setItem('token', data.token);
 
+                // Tampilkan alert login berhasil
+                alert('Login berhasil!');
+
                 // Redirect based on user role (ubah hash saja)
                 if (data.user.role === 'admin') {
                     window.location.hash = '#/admin-dashboard';
@@ -193,7 +204,15 @@ export function initAuth() {
     function setupEmployeeDashboardListeners() {
         const logoutButton = document.getElementById('logoutButton');
         if (logoutButton) {
-            logoutButton.addEventListener('click', handleLogout);
+            logoutButton.addEventListener('click', (e) => {
+                // Cek status kamera sebelum logout
+                if (window.cameraActive) {
+                    alert('Matikan kamera terlebih dahulu sebelum logout.');
+                    e.preventDefault();
+                    return;
+                }
+                handleLogout();
+            });
         }
         // Mulai deteksi kamera dan model setelah dashboard employee dirender
         startCameraDetection();
