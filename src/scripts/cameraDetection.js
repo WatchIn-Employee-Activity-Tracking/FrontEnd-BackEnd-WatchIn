@@ -27,19 +27,29 @@ let cameraActive = false;
 window.cameraActive = cameraActive;
 let mediapipeLoaded = false;
 let faceMeshInitialized = false;
+// Warning system
+let warningCount = 0;
+let lastWarningTime = 0;
+const WARNING_INTERVAL = 20000; // 20 seconds in milliseconds
 // Logging
 let eyeDetectionLog = [];
+let warningCountSpan = null;
 
-function addEyeLog(status, duration) {
+function addEyeLog(status, duration, warning = null) {
     const logList = document.getElementById('eyeDetectionLog');
     if (!logList) return;
     const now = new Date();
     const dateStr = now.toLocaleString('id-ID');
     const durasiStr = duration ? duration.toFixed(1) : '0';
     const li = document.createElement('li');
-    li.textContent = `[${dateStr}] Status: ${status}, Durasi: ${durasiStr} detik`;
+    if (warning) {
+        li.textContent = `[${dateStr}] WARNING ${warning}: Mata tertutup selama ${durasiStr} detik`;
+        li.classList.add('text-red-600', 'font-bold');
+    } else {
+        li.textContent = `[${dateStr}] Status: ${status}, Durasi: ${durasiStr} detik`;
+    }
     logList.insertBefore(li, logList.firstChild);
-    eyeDetectionLog.unshift({ date: dateStr, status, duration: durasiStr });
+    eyeDetectionLog.unshift({ date: dateStr, status, duration: durasiStr, warning });
     // Batasi maksimal 10 log
     while (logList.children.length > 10) {
         logList.removeChild(logList.lastChild);
@@ -118,29 +128,49 @@ async function startWebcam() {
 
 function updateDurations(predictedClass) {
     const now = Date.now();
-    if (lastEyeStatus === null) {
-        lastEyeStatus = predictedClass;
-        lastStatusChangeTime = now;
+    if (predictedClass === 'No face detected') {
+        // Jangan lakukan perhitungan apapun jika tidak ada wajah terdeteksi
+        openDurationSpan.textContent = '-';
+        closedDurationSpan.textContent = '-';
+        openDuration = 0;
+        closedDuration = 0;
+        lastStatusChangeTime = null;
+        lastEyeStatus = 'No face detected';
         return;
     }
-    if (predictedClass !== lastEyeStatus) {
-        const duration = (now - lastStatusChangeTime) / 1000;
-        if (lastEyeStatus === 'Opened') {
-            openDuration += duration;
-        } else if (lastEyeStatus === 'Closed') {
-            closedDuration += duration;
-        }
-        // Tambahkan log setiap kali status berubah
-        addEyeLog(lastEyeStatus, duration);
+    if (lastEyeStatus === null || lastStatusChangeTime === null) {
         lastEyeStatus = predictedClass;
         lastStatusChangeTime = now;
+        openDurationSpan.textContent = openDuration.toFixed(1);
+        closedDurationSpan.textContent = closedDuration.toFixed(1);
+        return;
     }
+    const duration = (now - lastStatusChangeTime) / 1000;
+    if (predictedClass === 'Closed') {
+        closedDuration += duration;
+        if (closedDuration >= 20) {
+            warningCount = Math.min(warningCount + 1, 3);
+            addEyeLog(predictedClass, 20, warningCount);
+            closedDuration = 0;
+            if (warningCountSpan) warningCountSpan.textContent = `Warning = ${warningCount}`;
+        }
+    } else if (predictedClass === 'Opened') {
+        openDuration += duration;
+        closedDuration = 0; // Reset closedDuration ke 0 saat berubah ke opened
+    }
+    lastEyeStatus = predictedClass;
+    lastStatusChangeTime = now;
     // Update UI
     openDurationSpan.textContent = openDuration.toFixed(1);
     closedDurationSpan.textContent = closedDuration.toFixed(1);
 }
 
 function updateDurationOnInterval() {
+    if (lastEyeStatus === 'No face detected' || lastStatusChangeTime === null) {
+        openDurationSpan.textContent = '-';
+        closedDurationSpan.textContent = '-';
+        return;
+    }
     if (lastEyeStatus && lastStatusChangeTime) {
         const now = Date.now();
         const duration = (now - lastStatusChangeTime) / 1000;
@@ -209,6 +239,7 @@ async function onResults(results) {
     } else {
         detectionStatus.textContent = 'No face detected.';
         detectionStatus.classList.add('gray');
+        updateDurations('No face detected');
     }
 }
 
@@ -310,4 +341,16 @@ export function startCameraDetection() {
         // Reload halaman setelah kamera dimatikan
         window.location.reload();
     };
+
+    warningCountSpan = document.getElementById('warningCount');
+    if (!warningCountSpan) {
+        // Jika elemen belum ada, buat dan sisipkan setelah closedDurationSpan
+        warningCountSpan = document.createElement('span');
+        warningCountSpan.id = 'warningCount';
+        warningCountSpan.style.display = 'block';
+        warningCountSpan.style.fontWeight = 'bold';
+        warningCountSpan.style.color = '#e53e3e'; // merah
+        closedDurationSpan.parentNode.appendChild(warningCountSpan);
+    }
+    warningCountSpan.textContent = 'Warning = 0';
 } 
