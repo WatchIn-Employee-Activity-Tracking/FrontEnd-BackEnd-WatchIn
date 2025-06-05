@@ -35,6 +35,70 @@ const WARNING_INTERVAL = 20000; // 20 seconds in milliseconds
 let eyeDetectionLog = [];
 let warningCountSpan = null;
 
+async function captureAndSaveImage() {
+    if (!webcamVideo || !cameraActive) return;
+    
+    try {
+        // Create a canvas to capture the full webcam frame
+        const captureCanvas = document.createElement('canvas');
+        captureCanvas.width = webcamVideo.videoWidth;
+        captureCanvas.height = webcamVideo.videoHeight;
+        const captureCtx = captureCanvas.getContext('2d');
+        
+        // Draw the current video frame
+        captureCtx.drawImage(webcamVideo, 0, 0);
+        
+        // Convert to base64
+        const imageData = captureCanvas.toDataURL('image/jpeg', 0.8);
+        
+        // Get current user data
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) {
+            console.error('No user data found');
+            return;
+        }
+
+        // Prepare data for saving
+        const captureData = {
+            user_id: user.id,
+            image_data: imageData,
+            capture_time: new Date().toISOString(),
+            warning_count: warningCount,
+            eye_status: lastEyeStatus,
+            closed_duration: closedDuration,
+            open_duration: openDuration
+        };
+
+        console.log('Sending capture data to backend:', captureData); // Log data being sent
+        console.log('Sending capture request to URL:', '/api/capture-logs'); // Log the target URL
+
+        // Send to backend
+        const response = await fetch('http://localhost:5000/api/capture-logs', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(captureData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save capture');
+        }
+
+        console.log('Image captured and saved successfully');
+        
+        // Reset warning count after successful capture and save
+        warningCount = 0;
+        if (warningCountSpan) {
+            warningCountSpan.textContent = `Warning = ${warningCount}`;
+        }
+        
+    } catch (error) {
+        console.error('Error capturing image:', error);
+    }
+}
+
 function addEyeLog(status, duration, warning = null) {
     const logList = document.getElementById('eyeDetectionLog');
     if (!logList) return;
@@ -45,6 +109,11 @@ function addEyeLog(status, duration, warning = null) {
     if (warning) {
         li.textContent = `[${dateStr}] WARNING ${warning}: Mata tertutup selama ${durasiStr} detik`;
         li.classList.add('text-red-600', 'font-bold');
+        
+        // Capture image when warning count reaches 3
+        if (warning === 3) {
+            captureAndSaveImage();
+        }
     } else {
         li.textContent = `[${dateStr}] Status: ${status}, Durasi: ${durasiStr} detik`;
     }
