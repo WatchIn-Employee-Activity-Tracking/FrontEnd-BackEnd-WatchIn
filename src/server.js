@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./api/auth');
+const captureLogsRoutes = require('./routes/captureLogsRoutes');
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/capture-logs', captureLogsRoutes);
 
 // Serve static files
 app.use(express.static('public'));
