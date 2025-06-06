@@ -1,4 +1,4 @@
-export function renderEmployeeDashboard() {
+export function renderEmployeeDashboard(employeeName = "Employee") {
     return `
         <div class="min-h-screen bg-gray-100">
             <!-- Employee Navigation -->
@@ -6,10 +6,10 @@ export function renderEmployeeDashboard() {
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
-                            <h1 class="text-xl font-bold text-gray-800">Employee Dashboard</h1>
+                            <h1 class="text-xl font-bold text-gray-800">WatchIn</h1>
                         </div>
                         <div class="flex items-center space-x-4">
-                            <span class="text-gray-600">Welcome, Employee</span>
+                            <span class="text-gray-600">Welcome, ${employeeName}</span>
                             <button id="logoutButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
                                 Logout
                             </button>

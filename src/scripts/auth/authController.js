@@ -237,7 +237,9 @@ export function initAuth() {
             setupAdminDashboardListeners();
             return;
         } else if (user.role !== 'admin' && hash === '#/employee-dashboard') {
-            app.innerHTML = renderEmployeeDashboard();
+            const rawName = user.firstName || user.name || 'Employee';
+            const employeeName = capitalizeFirstLetter(rawName);
+            app.innerHTML = renderEmployeeDashboard(employeeName);
             setupEmployeeDashboardListeners();
             return;
         } else {
@@ -263,4 +265,9 @@ export function initAuth() {
     } else {
         navigateToLogin();
     }
+}
+
+function capitalizeFirstLetter(str) {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
 } 
