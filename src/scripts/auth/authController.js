@@ -5,6 +5,7 @@ import { renderEmployeeDashboard } from '../../views/employee/dashboard';
 import { renderForgotPassword, initForgotPassword } from '../../views/auth/forgot-password';
 import { renderResetPassword, initResetPassword } from '../../views/auth/reset-password';
 import { startCameraDetection } from '../cameraDetection';
+import { renderEmployeeLogs, updateEmployeeLogs } from '../../views/admin/employeeLogs';
 
 export function initAuth() {
     const app = document.getElementById('app');
@@ -200,6 +201,16 @@ export function initAuth() {
         }
         updateTotalEmployees();
         updateUserList();
+        // Event listener untuk tombol Detail
+        setTimeout(() => {
+            const detailButtons = document.querySelectorAll('.detail-btn');
+            detailButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const userId = btn.getAttribute('data-id');
+                    window.location.hash = `#/admin-employee-logs/${userId}`;
+                });
+            });
+        }, 500); // Tunggu render selesai
     }
 
     // Setup employee dashboard listeners
@@ -237,6 +248,29 @@ export function initAuth() {
         if (user.role === 'admin' && hash === '#/admin-dashboard') {
             app.innerHTML = renderAdminDashboard();
             setupAdminDashboardListeners();
+            return;
+        } else if (user.role === 'admin' && hash.startsWith('#/admin-employee-logs/')) {
+            // Ambil userId dari hash
+            const userId = hash.split('/')[2];
+            // Fetch data user (nama, dsb) dari API user list
+            fetch(`http://localhost:5000/api/auth/users`)
+                .then(res => res.json())
+                .then(users => {
+                    const employee = users.find(u => String(u.id) === String(userId));
+                    if (!employee) {
+                        app.innerHTML = '<div class="p-8">Employee not found.</div>';
+                        return;
+                    }
+                    app.innerHTML = renderEmployeeLogs(employee);
+                    updateEmployeeLogs(userId);
+                    // Tombol back
+                    const backBtn = document.getElementById('backToDashboard');
+                    if (backBtn) {
+                        backBtn.addEventListener('click', () => {
+                            window.location.hash = '#/admin-dashboard';
+                        });
+                    }
+                });
             return;
         } else if (user.role !== 'admin' && hash === '#/employee-dashboard') {
             const rawName = user.firstName || user.name || 'Employee';
