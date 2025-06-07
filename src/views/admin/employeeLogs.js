@@ -52,6 +52,7 @@ export async function updateEmployeeLogs(userId) {
                                     <th class="px-6 py-3 text-center">Status Mata</th>
                                     <th class="px-6 py-3 text-center">Durasi Mata Tertutup</th>
                                     <th class="px-6 py-3 text-center">Durasi Mata Terbuka</th>
+                                    <th class="px-6 py-3 text-center">Gambar</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,12 +63,63 @@ export async function updateEmployeeLogs(userId) {
                                         <td class="px-6 py-2 text-center">${log.eye_status}</td>
                                         <td class="px-6 py-2 text-center">${log.closed_duration ? Math.round(log.closed_duration) : '-'}</td>
                                         <td class="px-6 py-2 text-center">${log.open_duration ? Math.round(log.open_duration) : '-'}</td>
+                                        <td class="px-6 py-2 text-center">
+                                            <button class="show-image-btn bg-blue-500 text-white px-2 py-1 rounded" data-logid="${log.id}">Lihat Gambar</button>
+                                        </td>
                                     </tr>
                                 `).join('')}
                             </tbody>
                         </table>
                     </div>
+                    <div id="imageOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
+                        <div style="background:#fff; padding:20px; border-radius:8px; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center;">
+                            <img id="overlayImage" src="" alt="Log Image" style="max-width:80vw; max-height:70vh; margin-bottom:16px;" />
+                            <button id="closeOverlayBtn" class="bg-red-500 text-white px-4 py-2 rounded">Tutup</button>
+                        </div>
+                    </div>
                 `;
+                // Add event listeners for image buttons
+                const imageBtns = document.querySelectorAll('.show-image-btn');
+                imageBtns.forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const logId = btn.getAttribute('data-logid');
+                        const overlay = document.getElementById('imageOverlay');
+                        const overlayImg = document.getElementById('overlayImage');
+                        overlay.style.display = 'flex';
+                        overlayImg.src = '';
+                        overlayImg.alt = 'Loading...';
+                        try {
+                            const token = localStorage.getItem('token');
+                            const res = await fetch(`http://localhost:5000/api/capture-logs/${logId}/image`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            const data = await res.json();
+                            if (data.status === 'success' && data.data && data.data.image_data) {
+                                // Convert binary to base64 if needed
+                                let imgSrc;
+                                if (typeof data.data.image_data === 'string' && data.data.image_data.startsWith('data:image')) {
+                                    imgSrc = data.data.image_data;
+                                } else {
+                                    // Fallback: try to convert binary to base64
+                                    imgSrc = `data:image/jpeg;base64,${data.data.image_data}`;
+                                }
+                                overlayImg.src = imgSrc;
+                                overlayImg.alt = 'Log Image';
+                            } else {
+                                overlayImg.alt = 'Gambar tidak ditemukan';
+                            }
+                        } catch (err) {
+                            overlayImg.alt = 'Gagal memuat gambar';
+                        }
+                    });
+                });
+                // Close overlay
+                const closeBtn = document.getElementById('closeOverlayBtn');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
+                        document.getElementById('imageOverlay').style.display = 'none';
+                    });
+                }
             }
         }
     } catch (error) {

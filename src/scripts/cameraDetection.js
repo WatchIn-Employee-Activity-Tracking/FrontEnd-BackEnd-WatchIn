@@ -30,7 +30,7 @@ let faceMeshInitialized = false;
 // Warning system
 let warningCount = 0;
 let lastWarningTime = 0;
-const WARNING_INTERVAL = 20000; // 20 seconds in milliseconds
+const WARNING_INTERVAL = 10000; // 10 seconds in milliseconds
 // Logging
 let eyeDetectionLog = [];
 let warningCountSpan = null;
@@ -220,9 +220,9 @@ function updateDurations(predictedClass) {
     const duration = (now - lastStatusChangeTime) / 1000;
     if (predictedClass === 'Closed') {
         closedDuration += duration;
-        if (closedDuration >= 20) {
+        if (closedDuration >= 10) {
             warningCount = Math.min(warningCount + 1, 3);
-            addEyeLog(predictedClass, 20, warningCount);
+            addEyeLog(predictedClass, 10, warningCount);
             closedDuration = 0;
             if (warningCountSpan) warningCountSpan.textContent = `Warning = ${warningCount}`;
         }
