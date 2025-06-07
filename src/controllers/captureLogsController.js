@@ -82,27 +82,36 @@ async function getCaptureLogs(req, res) {
 async function getCaptureImage(req, res) {
     try {
         const { id } = req.params;
+        const userRole = req.user.role;
         const userId = req.user.id;
-
-        const [rows] = await pool.execute(
-            `SELECT image_data
-            FROM capture_logs
-            WHERE id = ? AND user_id = ?`,
-            [id, userId]
-        );
-
+        let rows;
+        if (userRole === 'admin') {
+            // Admin bisa akses gambar log siapa saja
+            [rows] = await pool.execute(
+                `SELECT image_data FROM capture_logs WHERE id = ?`,
+                [id]
+            );
+        } else {
+            // User biasa hanya bisa akses log miliknya sendiri
+            [rows] = await pool.execute(
+                `SELECT image_data FROM capture_logs WHERE id = ? AND user_id = ?`,
+                [id, userId]
+            );
+        }
         if (rows.length === 0) {
             return res.status(404).json({
                 status: 'error',
                 message: 'Image not found'
             });
         }
-
-        // Send the image data
+        // Convert buffer to base64 data URL
+        const buffer = rows[0].image_data;
+        const base64Image = buffer.toString('base64');
+        const dataUrl = `data:image/jpeg;base64,${base64Image}`;
         res.json({
             status: 'success',
             data: {
-                image_data: rows[0].image_data
+                image_data: dataUrl
             }
         });
     } catch (error) {
