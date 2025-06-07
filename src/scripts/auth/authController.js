@@ -1,6 +1,6 @@
 import { renderLogin, initRememberMe, handleRememberMe } from '../../views/auth/login';
 import { renderRegister } from '../../views/auth/register';
-import { renderAdminDashboard } from '../../views/admin/dashboard';
+import { renderAdminDashboard, updateTotalEmployees, updateUserList } from '../../views/admin/dashboard';
 import { renderEmployeeDashboard } from '../../views/employee/dashboard';
 import { renderForgotPassword, initForgotPassword } from '../../views/auth/forgot-password';
 import { renderResetPassword, initResetPassword } from '../../views/auth/reset-password';
@@ -198,6 +198,8 @@ export function initAuth() {
         if (logoutButton) {
             logoutButton.addEventListener('click', handleLogout);
         }
+        updateTotalEmployees();
+        updateUserList();
     }
 
     // Setup employee dashboard listeners

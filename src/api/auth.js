@@ -168,4 +168,32 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
+// Get total employees count endpoint
+router.get('/total-employees', async (req, res) => {
+    try {
+        const [result] = await pool.execute(
+            'SELECT COUNT(*) as total FROM users WHERE role = ?',
+            ['employee']
+        );
+        res.json({ total: result[0].total });
+    } catch (error) {
+        console.error('Get total employees error:', error);
+        res.status(500).json({ message: 'Terjadi kesalahan server' });
+    }
+});
+
+// Endpoint untuk mengambil semua user (kecuali admin)
+router.get('/users', async (req, res) => {
+    try {
+        const [users] = await pool.execute(
+            'SELECT id, first_name, last_name, email, role FROM users WHERE role != ?',
+            ['admin']
+        );
+        res.json(users);
+    } catch (error) {
+        console.error('Get users error:', error);
+        res.status(500).json({ message: 'Terjadi kesalahan server' });
+    }
+});
+
 module.exports = router; 
