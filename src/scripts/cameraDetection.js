@@ -59,10 +59,13 @@ async function captureAndSaveImage() {
         }
 
         // Prepare data for saving
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        const localISOTime = new Date(now - offset).toISOString().slice(0, 19).replace('T', ' ');
         const captureData = {
             user_id: user.id,
             image_data: imageData,
-            capture_time: new Date().toISOString(),
+            capture_time: localISOTime,
             warning_count: warningCount,
             eye_status: lastEyeStatus,
             closed_duration: closedDuration,

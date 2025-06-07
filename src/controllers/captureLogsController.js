@@ -114,8 +114,33 @@ async function getCaptureImage(req, res) {
     }
 }
 
+async function getCaptureLogsByUserId(req, res) {
+    try {
+        const { userId } = req.params;
+        const [logs] = await pool.execute(
+            `SELECT id, capture_time, warning_count, eye_status, closed_duration, open_duration, created_at
+            FROM capture_logs
+            WHERE user_id = ?
+            ORDER BY capture_time DESC
+            LIMIT 50`,
+            [userId]
+        );
+        res.json({
+            status: 'success',
+            data: logs
+        });
+    } catch (error) {
+        console.error('Error fetching capture logs by userId:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch capture logs by userId'
+        });
+    }
+}
+
 module.exports = {
     saveCaptureLog,
     getCaptureLogs,
-    getCaptureImage
+    getCaptureImage,
+    getCaptureLogsByUserId
 }; 

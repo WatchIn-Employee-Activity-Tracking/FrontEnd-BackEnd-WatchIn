@@ -11,6 +11,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', captureLogsRoutes);
 app.use('/api/capture-logs', captureLogsRoutes);
 
 // Serve static files
