@@ -1,6 +1,8 @@
 // Import CDN script dependencies in index.html or dynamically if needed
 // Logic for camera, face mesh, and model detection
 
+import { showDrowsinessNotification, hideDrowsinessNotification, initializeNotificationHandlers } from './notificationHandler';
+
 const API_URL = 'https://watchin-be-model-314371797274.asia-southeast2.run.app/predict';
 
 let webcamVideo, eyeCanvas, detectionStatus, openDurationSpan, closedDurationSpan, ctx;
@@ -113,8 +115,9 @@ function addEyeLog(status, duration, warning = null) {
         li.textContent = `[${dateStr}] WARNING ${warning}: Mata tertutup selama ${durasiStr} detik`;
         li.classList.add('text-red-600', 'font-bold');
         
-        // Capture image when warning count reaches 3
+        // Show notification when warning count reaches 3
         if (warning === 3) {
+            showDrowsinessNotification();
             captureAndSaveImage();
         }
     } else {
@@ -323,6 +326,10 @@ export function startCameraDetection() {
     closedDurationSpan = document.getElementById('closedDuration');
     const startBtn = document.getElementById('startCameraBtn');
     const stopBtn = document.getElementById('stopCameraBtn');
+    
+    // Initialize notification handlers
+    initializeNotificationHandlers();
+    
     // Logging
     resetEyeLog();
     if (!webcamVideo || !eyeCanvas || !detectionStatus || !openDurationSpan || !closedDurationSpan || !startBtn || !stopBtn) return;
@@ -408,6 +415,8 @@ export function startCameraDetection() {
             clearInterval(durationInterval);
             durationInterval = null;
         }
+        // Hide notification when camera is stopped
+        hideDrowsinessNotification();
         // Reset log saat kamera dimatikan
         resetEyeLog();
         // Reload halaman setelah kamera dimatikan
@@ -425,4 +434,10 @@ export function startCameraDetection() {
         closedDurationSpan.parentNode.appendChild(warningCountSpan);
     }
     warningCountSpan.textContent = 'Warning = 0';
+}
+
+function handleWarning(warningCount, isCaptured) {
+    if (warningCount >= 3 || isCaptured) {
+        showWarningNotification();
+    }
 } 
