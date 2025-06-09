@@ -1,3 +1,5 @@
+import swal from 'sweetalert';
+
 export function renderResetPassword() {
     return `
         <div class="bg-white min-h-screen w-full flex flex-col md:flex-row">
@@ -101,7 +103,7 @@ export function initResetPassword() {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Password has been reset successfully!');
+                swal('Password Reset', 'Password has been reset successfully!', 'success');
                 window.location.hash = '#/login';
             } else {
                 passwordError.textContent = data.message || 'Failed to reset password';

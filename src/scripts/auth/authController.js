@@ -6,6 +6,7 @@ import { renderForgotPassword, initForgotPassword } from '../../views/auth/forgo
 import { renderResetPassword, initResetPassword } from '../../views/auth/reset-password';
 import { startCameraDetection } from '../cameraDetection';
 import { renderEmployeeLogs, updateEmployeeLogs } from '../../views/admin/employeeLogs';
+import swal from 'sweetalert';
 
 export function initAuth() {
     const app = document.getElementById('app');
@@ -115,7 +116,7 @@ export function initAuth() {
 
         // Password validation (kecuali admin)
         if (!isPasswordValid(password, email)) {
-            alert('Password must be at least 8 characters and contain a number and a symbol!');
+            swal('Warning', 'Password must be at least 8 characters and contain a number and a symbol!', 'warning');
             return;
         }
 
@@ -139,7 +140,7 @@ export function initAuth() {
                 localStorage.setItem('token', data.token);
 
                 // Tampilkan alert login berhasil
-                alert('Login berhasil!');
+                swal('Success', 'Login berhasil!', 'success');
 
                 // Redirect based on user role (ubah hash saja)
                 if (data.user.role === 'admin') {
@@ -148,11 +149,11 @@ export function initAuth() {
                     window.location.hash = '#/employee-dashboard';
                 }
             } else {
-                alert(data.message || 'Login failed');
+                swal('Error', data.message || 'Login failed', 'error');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('An error occurred during login');
+            swal('Error', 'An error occurred during login', 'error');
         }
     }
 
@@ -166,7 +167,7 @@ export function initAuth() {
 
         // Password validation (kecuali admin)
         if (!isPasswordValid(password, email)) {
-            alert('Password must be at least 8 characters and contain a number and a symbol!');
+            swal('Warning', 'Password must be at least 8 characters and contain a number and a symbol!', 'warning');
             return;
         }
 
@@ -182,14 +183,14 @@ export function initAuth() {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Registration successful! Please login.');
+                swal('Success', 'Registration successful! Please login.', 'success');
                 navigateToLogin();
             } else {
-                alert(data.message || 'Registration failed');
+                swal('Error', data.message || 'Registration failed', 'error');
             }
         } catch (error) {
             console.error('Registration error:', error);
-            alert('An error occurred during registration');
+            swal('Error', 'An error occurred during registration', 'error');
         }
     }
 
@@ -197,7 +198,22 @@ export function initAuth() {
     function setupAdminDashboardListeners() {
         const logoutButton = document.getElementById('logoutButton');
         if (logoutButton) {
-            logoutButton.addEventListener('click', handleLogout);
+            logoutButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                swal({
+                    title: 'Konfirmasi Logout',
+                    text: 'Apakah Anda yakin ingin logout?',
+                    icon: 'warning',
+                    buttons: true,
+                    dangerMode: true
+                }).then((willLogout) => {
+                    if (willLogout) {
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('token');
+                        window.location.hash = '/';
+                    }
+                });
+            });
         }
         updateTotalEmployees();
         updateUserList();
@@ -216,27 +232,35 @@ export function initAuth() {
                 btn.addEventListener('click', async (e) => {
                     const userId = btn.getAttribute('data-id');
                     if (!userId) {
-                        alert('ID user tidak ditemukan. Tidak dapat menghapus.');
+                        swal('Warning', 'ID user tidak ditemukan. Tidak dapat menghapus.', 'warning');
                         console.error('Data tombol:', btn);
                         return;
                     }
-                    if (confirm('Apakah anda yakin ingin menghapus akun ini?')) {
-                        try {
-                            const response = await fetch(`http://localhost:5000/api/auth/users/${userId}`, {
-                                method: 'DELETE',
-                            });
-                            const data = await response.json();
-                            if (response.ok) {
-                                alert('Akun berhasil dihapus');
-                                updateUserList();
-                                updateTotalEmployees();
-                            } else {
-                                alert(data.message || 'Gagal menghapus akun');
+                    swal({
+                        title: 'Konfirmasi',
+                        text: 'Apakah anda yakin ingin menghapus akun ini?',
+                        icon: 'warning',
+                        buttons: true,
+                        dangerMode: true
+                    }).then(async (willDelete) => {
+                        if (willDelete) {
+                            try {
+                                const response = await fetch(`http://localhost:5000/api/auth/users/${userId}`, {
+                                    method: 'DELETE',
+                                });
+                                const data = await response.json();
+                                if (response.ok) {
+                                    swal('Success', 'Akun berhasil dihapus', 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    swal('Error', data.message || 'Gagal menghapus akun', 'error');
+                                }
+                            } catch (error) {
+                                swal('Error', 'Terjadi kesalahan saat menghapus akun', 'error');
                             }
-                        } catch (error) {
-                            alert('Terjadi kesalahan saat menghapus akun');
                         }
-                    }
+                    });
                 });
             });
         }, 500); // Tunggu render selesai
@@ -249,22 +273,28 @@ export function initAuth() {
             logoutButton.addEventListener('click', (e) => {
                 // Cek status kamera sebelum logout
                 if (window.cameraActive) {
-                    alert('Matikan kamera terlebih dahulu sebelum logout.');
+                    swal('Warning', 'Matikan kamera terlebih dahulu sebelum logout.', 'warning');
                     e.preventDefault();
                     return;
                 }
-                handleLogout();
+                e.preventDefault();
+                swal({
+                    title: 'Konfirmasi Logout',
+                    text: 'Apakah Anda yakin ingin logout?',
+                    icon: 'warning',
+                    buttons: true,
+                    dangerMode: true
+                }).then((willLogout) => {
+                    if (willLogout) {
+                        localStorage.removeItem('user');
+                        localStorage.removeItem('token');
+                        window.location.hash = '/';
+                    }
+                });
             });
         }
         // Mulai deteksi kamera dan model setelah dashboard employee dirender
         startCameraDetection();
-    }
-
-    // Handle logout
-    function handleLogout() {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        window.location.hash = '/';
     }
 
     // Check login state and hash, render page accordingly
