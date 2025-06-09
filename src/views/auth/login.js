@@ -27,7 +27,7 @@ export function renderLogin() {
                         <a href="#/forgot-password" class="text-blue-600 hover:underline">Forgot Password?</a>
                     </div>
                     <button type="submit"
-                        class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Log
+                        class="w-full bg-[#EE3A24] text-white py-2 rounded font-semibold hover:bg-[#d32f2f] transition">Log
                         In</button>
                 </form>
                 <div class="mt-10 text-sm text-gray-500">

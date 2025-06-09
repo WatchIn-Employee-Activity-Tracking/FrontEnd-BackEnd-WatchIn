@@ -23,7 +23,7 @@ export function renderResetPassword() {
                     </div>
                     <div id="passwordError" class="text-red-500 text-sm hidden"></div>
                     <button type="submit"
-                        class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Reset Password</button>
+                        class="w-full bg-[#EE3A24] text-white py-2 rounded font-semibold hover:bg-[#d32f2f] transition">Reset Password</button>
                 </form>
                 
                 <div class="mt-6 text-sm text-gray-500">

@@ -34,7 +34,7 @@ export function renderRegister() {
                     </div>
                     
                     <button type="submit"
-                        class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Sign Up</button>
+                        class="w-full bg-[#EE3A24] text-white py-2 rounded font-semibold hover:bg-[#d32f2f] transition">Sign Up</button>
                 </form>
                 <div class="mt-10 text-sm text-gray-500">
                     Already have an account? <a href="#" class="text-blue-600 hover:underline" id="loginLink">Login</a>
