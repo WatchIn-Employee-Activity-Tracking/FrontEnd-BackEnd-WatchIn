@@ -210,6 +210,35 @@ export function initAuth() {
                     window.location.hash = `#/admin-employee-logs/${userId}`;
                 });
             });
+            // Event listener untuk tombol Delete
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const userId = btn.getAttribute('data-id');
+                    if (!userId) {
+                        alert('ID user tidak ditemukan. Tidak dapat menghapus.');
+                        console.error('Data tombol:', btn);
+                        return;
+                    }
+                    if (confirm('Apakah anda yakin ingin menghapus akun ini?')) {
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/auth/users/${userId}`, {
+                                method: 'DELETE',
+                            });
+                            const data = await response.json();
+                            if (response.ok) {
+                                alert('Akun berhasil dihapus');
+                                updateUserList();
+                                updateTotalEmployees();
+                            } else {
+                                alert(data.message || 'Gagal menghapus akun');
+                            }
+                        } catch (error) {
+                            alert('Terjadi kesalahan saat menghapus akun');
+                        }
+                    }
+                });
+            });
         }, 500); // Tunggu render selesai
     }
 
