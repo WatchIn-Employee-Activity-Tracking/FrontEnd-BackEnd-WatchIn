@@ -1,3 +1,5 @@
+import swal from 'sweetalert';
+
 export function renderAdminDashboard() {
     return `
         <div class="min-h-screen bg-[#FFF9F9]">
@@ -129,7 +131,7 @@ export function handleDeleteButtonClick(event) {
     const userId = btn.getAttribute('data-id');
 
     if (!userId || isNaN(userId)) {
-        alert('ID user tidak valid. Tidak dapat menghapus.');
+        swal('ID user tidak valid', 'Tidak dapat menghapus.', 'error');
         console.error('Data tombol:', btn);
         return;
     }
