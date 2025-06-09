@@ -18,14 +18,18 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Insert admin user (password: admin)
 INSERT INTO users (first_name, last_name, email, password, role)
-VALUES ('Admin', 'User', 'admin@gmail.com', '$2y$10$fAmKBrwbSuLZNhdgkAVgoeZsTnoQ5hllhjjrPW4KL2vSYps1nnu0S', 'admin');
+VALUES ('Admin', 'User', 'admin@gmail.com', '$2y$10$2Uzla.RFd1tqcIrmagWilOOGs8/EZTygGRIpzGcT3xhwrEgIYThO2', 'admin');
 
--- Create employees table
-CREATE TABLE IF NOT EXISTS employees (
+-- Insert Capture Logs Table 
+CREATE TABLE IF NOT EXISTS capture_logs (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
-    position VARCHAR(50) NOT NULL,
-    department VARCHAR(50) NOT NULL,
-    hire_date DATE NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-); 
+    image_data LONGBLOB NOT NULL,
+    capture_time DATETIME NOT NULL,
+    warning_count INT NOT NULL,
+    eye_status VARCHAR(20) NOT NULL,
+    closed_duration FLOAT NOT NULL,
+    open_duration FLOAT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci; 
