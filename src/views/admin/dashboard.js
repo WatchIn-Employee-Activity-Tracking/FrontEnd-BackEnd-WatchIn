@@ -1,4 +1,5 @@
 import swal from 'sweetalert';
+import logo from '../../img/Watchin32oren.png';
 
 export function renderAdminDashboard() {
     return `
@@ -8,6 +9,7 @@ export function renderAdminDashboard() {
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
+                            <img src="${logo}" alt="WatchIn Logo" class="w-8 h-8 object-contain mr-2" />
                             <h1 class="text-2xl font-extrabold text-[#EE3A24] tracking-wide">WatchIn</h1>
                         </div>
                         <div class="flex items-center space-x-4">
