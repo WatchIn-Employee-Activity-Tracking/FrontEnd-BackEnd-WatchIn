@@ -4,3 +4,16 @@
 
 /* Your custom styles here */
 
+.feature-card {
+  transition: all 0.3s;
+}
+.feature-card:hover {
+  background-color: #EE3A24 !important;
+  border-color: #fff !important;
+}
+.feature-card:hover p,
+.feature-card:hover svg {
+  color: #fff !important;
+  fill: #fff !important;
+}
+
