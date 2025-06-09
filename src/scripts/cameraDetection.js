@@ -114,7 +114,6 @@ function addEyeLog(status, duration, warning = null) {
     if (warning) {
         li.textContent = `[${dateStr}] WARNING ${warning}: Mata tertutup selama ${durasiStr} detik`;
         li.classList.add('text-red-600', 'font-bold');
-        
         // Show notification when warning count reaches 3
         if (warning === 3) {
             showDrowsinessNotification();
@@ -125,11 +124,11 @@ function addEyeLog(status, duration, warning = null) {
     }
     logList.insertBefore(li, logList.firstChild);
     eyeDetectionLog.unshift({ date: dateStr, status, duration: durasiStr, warning });
-    // Batasi maksimal 10 log
-    while (logList.children.length > 10) {
+    // Batasi maksimal 4 log
+    while (logList.children.length > 4) {
         logList.removeChild(logList.lastChild);
     }
-    while (eyeDetectionLog.length > 10) {
+    while (eyeDetectionLog.length > 4) {
         eyeDetectionLog.pop();
     }
     logList.scrollTop = 0;
@@ -355,6 +354,9 @@ export function startCameraDetection() {
         startBtn.style.display = 'none';
         stopBtn.style.display = '';
         webcamVideo.style.display = '';
+        // Sembunyikan hint saat kamera aktif
+        const cameraHint = document.getElementById('cameraHint');
+        if (cameraHint) cameraHint.style.display = 'none';
         if (!mediapipeLoaded && (!window.FaceMesh || !window.Camera)) {
             const faceMeshScript = document.createElement('script');
             faceMeshScript.src = 'https://unpkg.com/@mediapipe/face_mesh/face_mesh.js';
@@ -397,6 +399,9 @@ export function startCameraDetection() {
         stopBtn.style.display = 'none';
         startBtn.style.display = '';
         webcamVideo.style.display = 'none';
+        // Tampilkan hint saat kamera dimatikan
+        const cameraHint = document.getElementById('cameraHint');
+        if (cameraHint) cameraHint.style.display = '';
         if (webcamVideo.srcObject) {
             webcamVideo.srcObject.getTracks().forEach(track => track.stop());
             webcamVideo.srcObject = null;

@@ -17,7 +17,7 @@ export function renderForgotPassword() {
                         <div id="emailError" class="text-red-500 text-sm mt-1 hidden"></div>
                     </div>
                     <button type="submit"
-                        class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Send Reset Link</button>
+                        class="w-full bg-[#EE3A24] text-white py-2 rounded font-semibold hover:bg-[#d32f2f] transition">Send Reset Link</button>
                 </form>
                 
                 <div class="mt-6 text-sm text-gray-500">
