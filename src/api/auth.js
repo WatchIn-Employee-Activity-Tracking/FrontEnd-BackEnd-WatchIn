@@ -196,4 +196,32 @@ router.get('/users', async (req, res) => {
     }
 });
 
+// Endpoint untuk menghapus user berdasarkan id
+router.delete('/users/:id', async (req, res) => {
+    const userId = req.params.id;
+    if (!userId || isNaN(userId)) {
+        return res.status(400).json({ message: 'ID user tidak valid' });
+    }
+    const conn = await pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        // Hapus semua log milik user ini
+        await conn.execute('DELETE FROM capture_logs WHERE user_id = ?', [userId]);
+        // Hapus user
+        const [result] = await conn.execute('DELETE FROM users WHERE id = ?', [userId]);
+        if (result.affectedRows === 0) {
+            await conn.rollback();
+            return res.status(404).json({ message: 'User tidak ditemukan' });
+        }
+        await conn.commit();
+        res.json({ message: 'User dan log berhasil dihapus' });
+    } catch (error) {
+        await conn.rollback();
+        console.error('Delete user error:', error);
+        res.status(500).json({ message: 'Terjadi kesalahan server', error: error.message });
+    } finally {
+        conn.release();
+    }
+});
+
 module.exports = router; 

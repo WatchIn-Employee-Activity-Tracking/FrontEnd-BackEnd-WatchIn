@@ -79,6 +79,7 @@ export async function updateUserList() {
     try {
         const response = await fetch('http://localhost:5000/api/auth/users');
         const users = await response.json();
+        console.log('Data users dari backend:', users);
         const listContainer = document.querySelector('#employeeList');
         if (listContainer) {
             if (users.length === 0) {
@@ -96,10 +97,17 @@ export async function updateUserList() {
                             <div class="w-1/3 font-semibold">${user.first_name} ${user.last_name}</div>
                             <div class="w-1/3 text-gray-500 text-sm">${user.email}</div>
                             <div class="w-1/6 text-red-600 text-xs uppercase">${user.role}</div>
-                            <div class="w-1/6 text-right">
+                            <div class="w-1/6 text-right flex gap-2 justify-end">
                                 <button class="bg-[#EE3A24] text-white px-3 py-1 rounded hover:bg-[#d32f2f] transition detail-btn" data-id="${user.id}">
                                     Detail
                                 </button>
+                                ${
+                                    user.id && !isNaN(user.id)
+                                    ? `<button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition delete-btn" data-id="${user.id}">
+                                        Delete
+                                    </button>`
+                                    : `<span class="text-xs text-gray-400">ID tidak valid</span>`
+                                }
                             </div>
                         </div>
                     `).join('')}
@@ -113,4 +121,19 @@ export async function updateUserList() {
             listContainer.innerHTML = '<p class="text-red-500">Error loading user list</p>';
         }
     }
+}
+
+// Add this new function to handle delete button click
+export function handleDeleteButtonClick(event) {
+    const btn = event.target;
+    const userId = btn.getAttribute('data-id');
+
+    if (!userId || isNaN(userId)) {
+        alert('ID user tidak valid. Tidak dapat menghapus.');
+        console.error('Data tombol:', btn);
+        return;
+    }
+
+    // Proceed with the delete operation
+    // ... (rest of the function code remains unchanged)
 } 
