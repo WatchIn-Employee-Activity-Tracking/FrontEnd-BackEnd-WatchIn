@@ -1,22 +1,22 @@
 export function renderEmployeeLogs(employee) {
     return `
-        <div class="min-h-screen bg-gray-100">
-            <nav class="bg-white shadow-lg">
+        <div class="min-h-screen bg-[#FFF9F9]">
+            <nav class="bg-white shadow-lg border-b-2 border-[#EE3A24]">
                 <div class="max-w-7xl mx-auto px-4">
                     <div class="flex justify-between h-16">
                         <div class="flex items-center">
-                            <h1 class="text-xl font-bold text-gray-800">WatchIn</h1>
+                            <h1 class="text-2xl font-extrabold text-[#EE3A24] tracking-wide">WatchIn</h1>
                         </div>
                         <div class="flex items-center space-x-4">
-                            <button id="backToDashboard" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                            <button id="backToDashboard" class="bg-gray-400 text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-gray-600 transition-all duration-200">
                                 Back
                             </button>
                         </div>
                     </div>
                 </div>
             </nav>
-            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <h2 class="text-2xl font-bold mb-4">Log Aktivitas: ${employee.first_name} ${employee.last_name}</h2>
+            <div class="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+                <h2 class="text-2xl font-bold mb-4 text-[#EE3A24]">Log Aktivitas: ${employee.first_name} ${employee.last_name}</h2>
                 <div class="bg-white shadow rounded-lg p-4">
                     <div id="employeeLogsTable">
                         <p class="text-gray-500">Loading logs...</p>
@@ -44,7 +44,7 @@ export async function updateEmployeeLogs(userId) {
             } else {
                 tableContainer.innerHTML = `
                     <div class="overflow-x-auto">
-                        <table class="w-full min-w-max divide-y divide-gray-200">
+                        <table class="w-full min-w-max divide-y divide-red-200">
                             <thead>
                                 <tr>
                                     <th class="px-6 py-3 text-center">Waktu</th>
@@ -64,7 +64,7 @@ export async function updateEmployeeLogs(userId) {
                                         <td class="px-6 py-2 text-center">${log.closed_duration ? Math.round(log.closed_duration) : '-'}</td>
                                         <td class="px-6 py-2 text-center">${log.open_duration ? Math.round(log.open_duration) : '-'}</td>
                                         <td class="px-6 py-2 text-center">
-                                            <button class="show-image-btn bg-blue-500 text-white px-2 py-1 rounded" data-logid="${log.id}">Lihat Gambar</button>
+                                            <button class="show-image-btn bg-[#EE3A24] text-white px-2 py-1 rounded hover:bg-[#d32f2f] transition" data-logid="${log.id}">Lihat Gambar</button>
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -72,7 +72,7 @@ export async function updateEmployeeLogs(userId) {
                         </table>
                     </div>
                     <div id="imageOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center;">
-                        <div style="background:#fff; padding:20px; border-radius:8px; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center;">
+                        <div id="imageOverlayContent" class="transition-all duration-500 translate-y-12 opacity-0" style="background:#fff; padding:20px; border-radius:8px; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center;">
                             <img id="overlayImage" src="" alt="Log Image" style="max-width:80vw; max-height:70vh; margin-bottom:16px;" />
                             <button id="closeOverlayBtn" class="bg-red-500 text-white px-4 py-2 rounded">Tutup</button>
                         </div>
@@ -84,8 +84,14 @@ export async function updateEmployeeLogs(userId) {
                     btn.addEventListener('click', async (e) => {
                         const logId = btn.getAttribute('data-logid');
                         const overlay = document.getElementById('imageOverlay');
+                        const overlayContent = document.getElementById('imageOverlayContent');
                         const overlayImg = document.getElementById('overlayImage');
                         overlay.style.display = 'flex';
+                        // Trigger animasi masuk
+                        setTimeout(() => {
+                            overlayContent.classList.remove('translate-y-12', 'opacity-0');
+                            overlayContent.classList.add('translate-y-0', 'opacity-100');
+                        }, 10);
                         overlayImg.src = '';
                         overlayImg.alt = 'Loading...';
                         try {
@@ -117,7 +123,14 @@ export async function updateEmployeeLogs(userId) {
                 const closeBtn = document.getElementById('closeOverlayBtn');
                 if (closeBtn) {
                     closeBtn.addEventListener('click', () => {
-                        document.getElementById('imageOverlay').style.display = 'none';
+                        const overlay = document.getElementById('imageOverlay');
+                        const overlayContent = document.getElementById('imageOverlayContent');
+                        // Trigger animasi keluar
+                        overlayContent.classList.remove('translate-y-0', 'opacity-100');
+                        overlayContent.classList.add('translate-y-12', 'opacity-0');
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                        }, 500);
                     });
                 }
             }

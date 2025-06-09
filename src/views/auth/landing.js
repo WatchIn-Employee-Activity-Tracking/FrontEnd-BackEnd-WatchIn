@@ -38,10 +38,10 @@ export function renderLanding() {
                     <span class="text-white">WatchIn</span>
                 </div>
                 <nav class="hidden md:flex text-sm font-normal text-white space-x-6">   <!-- Memindahkan flex space-x-6 ke sini dan menghapus div barMenu -->
-                    <a href="#hero" class="hover:underline">Beranda</a>   
-                    <a href="#fitur" class="hover:underline">Fitur</a>
-                    <a href="#keunggulan" class="hover:underline">Keunggulan</a>
-                    <a href="#kontak" class="hover:underline">Kontak</a>
+                    <a href="#hero" class="hover:underline">Home</a>   
+                    <a href="#fitur" class="hover:underline">Features</a>
+                    <a href="#keunggulan" class="hover:underline">Benefits</a>
+                    <a href="#kontak" class="hover:underline">Contact Us</a>
                 </nav>
                 <button class="rounded text-sm font-medium text-white bg-[#EE3A24] border border-white hover:bg-white hover:text-[#EE3A24] transition px-4 py-2" type="button" id="loginButton">
                     Log In
@@ -53,7 +53,7 @@ export function renderLanding() {
                 <section class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 py-16 md:py-24" id="hero">
                     <div class="max-w-md md:max-w-lg">
                         <h1 class="text-2xl md:text-3xl font-extrabold leading-tight mb-3 font-montserrat">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            WatchIn
                         </h1>
                         <p class="text-gray-700 mb-6 text-sm md:text-base">
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ornare ullamcorper diam. Ut sit amet risus viverra, pharetra lacus quis.
