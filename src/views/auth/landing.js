@@ -1,4 +1,6 @@
 import logo from '../../img/WatchIn32white-01.png';
+import LandingHero from '../../img/Landing_Hero1.png';
+import Benefits from '../../img/Benefit.png';
 
 export function renderLanding() {
     return `
@@ -38,7 +40,7 @@ export function renderLanding() {
                         </div>
                     </div>
                     <div class="flex-shrink-0 w-full max-w-lg opacity-0 translate-x-10 transition duration-700 md:mr-8" data-hero-img>
-                        <img alt="Illustration of a video player interface" class="w-full rounded-lg" draggable="false" height="400" src="https://storage.googleapis.com/a1aa/image/a45e34ca-6162-4f1f-cbde-ef6d8955af60.jpg" width="600"/>
+                        <img alt="Illustration of a video player interface" class="w-full rounded-lg" draggable="false" height="400" src="${LandingHero}" width="600"/>
                     </div>
                 </section>
 
@@ -80,7 +82,7 @@ export function renderLanding() {
 
                 <section class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16 py-16 md:py-24" id="keunggulan">
                     <div class="flex-shrink-0 w-full max-w-lg opacity-0 translate-x-10 transition duration-700 md:mr-8 md:order-0" data-hero-img>
-                        <img alt="Illustration of a video player interface" class="w-full rounded-lg" draggable="false" height="400" src="https://storage.googleapis.com/a1aa/image/a45e34ca-6162-4f1f-cbde-ef6d8955af60.jpg" width="600"/>
+                        <img alt="Illustration of a video player interface" class="w-full rounded-lg" draggable="false" height="400" src="${Benefits}" width="600"/>
                     </div>
                     <div class="max-w-md md:max-w-lg opacity-0 -translate-x-10 transition duration-700 md:ml-8 md:order-1" data-hero-text>
                         <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3 font-montserrat">
