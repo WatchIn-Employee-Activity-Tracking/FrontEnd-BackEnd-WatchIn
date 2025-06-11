@@ -21,8 +21,8 @@ WatchIn adalah aplikasi untuk memantau aktivitas karyawan secara real-time. Proy
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/username/watchin.git
-cd watchin
+git clone https://github.com/WatchIn-Employee-Activity-Tracking/FrontEnd-BackEnd-WatchIn.git
+cd FrontEnd-BackEnd-WatchIn
 ```
 
 ### 2. Install Dependency
@@ -86,15 +86,5 @@ watchin/
 - Jangan lupa untuk memastikan MySQL/XAMPP aktif sebelum menjalankan backend.
 - File `database.sql` hanya menyediakan struktur dan data awal, sesuaikan sesuai kebutuhan aplikasi Anda.
 
----
 
-## 📬 Kontribusi
-
-Kontribusi sangat terbuka! Silakan fork repo ini dan buat pull request untuk perbaikan atau penambahan fitur.
-
----
-
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
  
