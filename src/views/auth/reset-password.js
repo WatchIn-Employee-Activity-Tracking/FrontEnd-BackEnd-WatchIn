@@ -1,10 +1,12 @@
 import swal from 'sweetalert';
+import Poster from '../../img/Poster.png';
+
 
 export function renderResetPassword() {
     return `
         <div class="bg-white min-h-screen w-full flex flex-col md:flex-row">
-            <div class="flex-1 flex items-center justify-center min-h-[200px] md:min-h-screen bg-slate-500">
-                <img src="" alt="" class="w-80 h-80 object-contain" />
+            <div class="flex-1 h-32 md:h-screen bg-slate-500 relative overflow-hidden">
+                <img src="${Poster}" alt="Poster" class="w-full h-full object-cover" />
             </div>
 
             <div class="flex-1 flex flex-col justify-center px-6 py-10 md:px-16 md:py-10 min-h-[400px] md:min-h-screen">
